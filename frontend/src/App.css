@@ -1,0 +1,45 @@
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f7fb;
+}
+
+h1 {
+  text-align: center;
+  color: #2563eb;
+}
+
+.upload-box {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  margin-top: 25px;
+  box-shadow: 0px 5px 20px rgba(0,0,0,.08);
+}
+
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+.card {
+  background: white;
+  margin-top: 25px;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0px 5px 20px rgba(0,0,0,.08);
+}
+
+.card h2 {
+  color: #2563eb;
+}
