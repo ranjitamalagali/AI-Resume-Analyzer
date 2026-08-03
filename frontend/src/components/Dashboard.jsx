@@ -6,7 +6,7 @@ function Dashboard({ analysis }) {
   return (
     <div>
 
-      <ATSScore score={analysis.ats_score} /> <div
+      <div
   style={{
     display: "flex",
     justifyContent: "space-around",

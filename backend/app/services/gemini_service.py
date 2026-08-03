@@ -1,5 +1,6 @@
 import os
 import json
+
 from dotenv import load_dotenv
 from google import genai
 
@@ -15,13 +16,9 @@ def analyze_resume(resume_text, job_description=""):
     prompt = f"""
 You are an expert ATS Resume Analyzer.
 
-Compare the resume with the given job description.
+Compare the following resume with the given job description.
 
-IMPORTANT:
 Return ONLY valid JSON.
-Do NOT add markdown.
-Do NOT use ```json.
-Do NOT add explanations.
 
 Return exactly in this format:
 
@@ -46,6 +43,13 @@ Job Description:
 """
 
     try:
+
+        print("===================================")
+        print("Resume length:", len(resume_text))
+        print("Job description length:", len(job_description))
+        print("Using model: gemini-3.6-flash")
+        print("===================================")
+
         response = client.models.generate_content(
             model="gemini-3.6-flash",
             contents=prompt
@@ -53,48 +57,48 @@ Job Description:
 
         text = response.text.strip()
 
+        print("\n========== RAW GEMINI RESPONSE ==========")
+        print(text)
+        print("=========================================\n")
+
         # Remove markdown if Gemini returns it
         text = text.replace("```json", "")
-        text = text.replace("```", "")
-        text = text.strip()
+        text = text.replace("```", "").strip()
 
-        print("\n========== GEMINI RESPONSE ==========")
-        print(text)
-        print("=====================================\n")
+        # Extract JSON
+        start = text.find("{")
+        end = text.rfind("}")
+
+        if start == -1 or end == -1:
+            raise ValueError("Gemini did not return valid JSON.")
+
+        text = text[start:end + 1]
 
         data = json.loads(text)
 
-        # Ensure every expected field exists
-        data.setdefault("ats_score", 0)
-        data.setdefault("job_match_score", 0)
-        data.setdefault("summary", "")
-        data.setdefault("technical_skills", [])
-        data.setdefault("matched_skills", [])
-        data.setdefault("missing_skills", [])
-        data.setdefault("missing_keywords", [])
-        data.setdefault("strengths", [])
-        data.setdefault("improvements", [])
-        data.setdefault("interview_questions", [])
+        defaults = {
+            "ats_score": 0,
+            "job_match_score": 0,
+            "summary": "",
+            "technical_skills": [],
+            "matched_skills": [],
+            "missing_skills": [],
+            "missing_keywords": [],
+            "strengths": [],
+            "improvements": [],
+            "interview_questions": [],
+        }
+
+        for key, value in defaults.items():
+            data.setdefault(key, value)
 
         return data
 
     except Exception as e:
 
         print("\n========== GEMINI ERROR ==========")
+        print(type(e).__name__)
         print(e)
         print("==================================\n")
 
-        return {
-            "ats_score": 0,
-            "job_match_score": 0,
-            "summary": "Unable to analyze resume.",
-            "technical_skills": [],
-            "matched_skills": [],
-            "missing_skills": [],
-            "missing_keywords": [],
-            "strengths": [],
-            "improvements": [
-                "Please try again."
-            ],
-            "interview_questions": []
-        }
+        raise

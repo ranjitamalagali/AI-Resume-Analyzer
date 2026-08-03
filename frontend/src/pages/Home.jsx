@@ -40,14 +40,14 @@ function Home() {
             style={{
               color: "#64748b",
               fontSize: "18px",
-              maxWidth: "700px",
+              maxWidth: "750px",
               margin: "0 auto",
-              lineHeight: "1.6",
+              lineHeight: "1.7",
             }}
           >
-            Upload your resume, compare it with a job description,
-            receive an ATS score, AI-powered suggestions,
-            interview questions, and download a professional report.
+            Upload your resume, paste a job description, and let AI analyze
+            your ATS score, job match, missing skills, interview questions,
+            and improvement suggestions.
           </p>
         </div>
 
@@ -63,7 +63,7 @@ function Home() {
           <Link to="/history">
             <button
               style={{
-                padding: "12px 25px",
+                padding: "12px 24px",
                 backgroundColor: "#2563eb",
                 color: "white",
                 border: "none",
@@ -79,7 +79,7 @@ function Home() {
           <Link to="/">
             <button
               style={{
-                padding: "12px 25px",
+                padding: "12px 24px",
                 backgroundColor: "#16a34a",
                 color: "white",
                 border: "none",
@@ -88,12 +88,12 @@ function Home() {
                 fontWeight: "bold",
               }}
             >
-              🏠 Home
+              🏠 Landing Page
             </button>
           </Link>
         </div>
 
-        {/* Upload Section */}
+        {/* Upload Card */}
         <div
           style={{
             background: "#ffffff",
@@ -106,11 +106,11 @@ function Home() {
           <UploadBox setAnalysis={setAnalysis} />
         </div>
 
-        {/* Analysis Dashboard */}
+        {/* Dashboard */}
         {analysis && (
           <div
             style={{
-              marginTop: "40px",
+              marginTop: "30px",
             }}
           >
             <Dashboard analysis={analysis} />

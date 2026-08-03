@@ -1,12 +1,23 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
-import UploadBox from "../components/UploadBox";
-import Dashboard from "../components/Dashboard";
+import api from "../services/api";
 
-function Home() {
-  const [analysis, setAnalysis] = useState(null);
+function History() {
+  const [history, setHistory] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    api
+      .get("/history")
+      .then((response) => {
+        setHistory(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   return (
     <>
@@ -14,111 +25,71 @@ function Home() {
 
       <div
         style={{
-          maxWidth: "1100px",
+          maxWidth: "1000px",
           margin: "40px auto",
           padding: "20px",
         }}
       >
-        {/* Header */}
-        <div
+        <h1
           style={{
             textAlign: "center",
-            marginBottom: "40px",
-          }}
-        >
-          <h1
-            style={{
-              fontSize: "40px",
-              color: "#2563eb",
-              marginBottom: "10px",
-            }}
-          >
-            🚀 AI Resume Analyzer
-          </h1>
-
-          <p
-            style={{
-              color: "#64748b",
-              fontSize: "18px",
-              maxWidth: "700px",
-              margin: "0 auto",
-              lineHeight: "1.6",
-            }}
-          >
-            Upload your resume, compare it with a job description,
-            receive an ATS score, AI-powered suggestions,
-            interview questions, and download a professional report.
-          </p>
-        </div>
-
-        {/* Navigation Buttons */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "15px",
             marginBottom: "30px",
           }}
         >
-          <Link to="/history">
-            <button
+          📂 Resume History
+        </h1>
+
+        {history.length === 0 ? (
+          <h3 style={{ textAlign: "center" }}>
+            No resume analyses found.
+          </h3>
+        ) : (
+          history.map((resume) => (
+            <div
+              key={resume.id}
               style={{
-                padding: "12px 25px",
-                backgroundColor: "#2563eb",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontWeight: "bold",
+                background: "#fff",
+                padding: "20px",
+                marginBottom: "20px",
+                borderRadius: "12px",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
               }}
             >
-              📂 View History
-            </button>
-          </Link>
+              <h3>{resume.filename}</h3>
 
-          <Link to="/">
-            <button
-              style={{
-                padding: "12px 25px",
-                backgroundColor: "#16a34a",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontWeight: "bold",
-              }}
-            >
-              🏠 Home
-            </button>
-          </Link>
-        </div>
+              <p>
+                <strong>ATS Score:</strong> {resume.ats_score}%
+              </p>
 
-        {/* Upload Section */}
-        <div
-          style={{
-            background: "#ffffff",
-            padding: "30px",
-            borderRadius: "12px",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
-            marginBottom: "30px",
-          }}
-        >
-          <UploadBox setAnalysis={setAnalysis} />
-        </div>
+              <p>
+                <strong>Job Match:</strong> {resume.job_match_score}%
+              </p>
 
-        {/* Analysis Dashboard */}
-        {analysis && (
-          <div
-            style={{
-              marginTop: "40px",
-            }}
-          >
-            <Dashboard analysis={analysis} />
-          </div>
+              <p>
+                <strong>Uploaded:</strong>{" "}
+                {new Date(resume.created_at).toLocaleString()}
+              </p>
+
+              <button
+                onClick={() => navigate(`/analysis/${resume.id}`)}
+                style={{
+                  marginTop: "10px",
+                  padding: "10px 20px",
+                  backgroundColor: "#2563eb",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                }}
+              >
+                View Analysis
+              </button>
+            </div>
+          ))
         )}
       </div>
     </>
   );
 }
 
-export default Home;
+export default History;
