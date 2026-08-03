@@ -6,8 +6,8 @@ from app.database import Base, engine
 import app.models
 from app.routers import history
 from app.routers import report
+from app.routers import cover_letter
 
-app.include_router(report.router, tags=["Reports"])
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -25,7 +25,8 @@ app.add_middleware(
 
 app.include_router(upload.router, tags=["Upload"])
 app.include_router(history.router, tags=["History"])
-
+app.include_router(report.router, tags=["Report"])
+app.include_router(cover_letter.router,tags=["Cover Letter"])
 @app.get("/")
 def root():
     return {

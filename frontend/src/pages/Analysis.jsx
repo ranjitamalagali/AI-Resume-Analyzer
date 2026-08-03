@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 
+import Navbar from "../components/Navbar";
+
 function Analysis() {
   const { id } = useParams();
 
@@ -20,146 +22,229 @@ function Analysis() {
 
   if (!analysis) {
     return (
-      <h2 style={{ textAlign: "center", marginTop: "50px" }}>
-        Loading...
-      </h2>
+      <>
+        <Navbar />
+        <h2
+          style={{
+            textAlign: "center",
+            marginTop: "60px",
+          }}
+        >
+          Loading...
+        </h2>
+      </>
     );
   }
 
   return (
-    <div
-      style={{
-        maxWidth: "1000px",
-        margin: "40px auto",
-        padding: "20px",
-      }}
-    >
-      <Link to="/history">
-        <button
-          style={{
-            marginBottom: "20px",
-            padding: "10px 20px",
-            border: "none",
-            background: "#2563eb",
-            color: "white",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}
-        >
-          ← Back to History
-        </button>
-      </Link>
-
-      <h1>{analysis.filename}</h1>
+    <>
+      <Navbar />
 
       <div
         style={{
-          display: "flex",
-          gap: "30px",
-          marginBottom: "30px",
+          maxWidth: "1100px",
+          margin: "40px auto",
+          padding: "20px",
         }}
       >
         <div
           style={{
-            background: "#e0f2fe",
-            padding: "20px",
-            borderRadius: "10px",
-            flex: 1,
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: "30px",
           }}
         >
-          <h2>ATS Score</h2>
-          <h1>{analysis.ats_score}%</h1>
+          <Link to="/history">
+            <button
+              style={{
+                padding: "10px 20px",
+                background: "#2563eb",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+            >
+              ← Back
+            </button>
+          </Link>
+
+          <button
+            onClick={() =>
+              window.open(
+                `http://127.0.0.1:8000/report/${id}`,
+                "_blank"
+              )
+            }
+            style={{
+              padding: "10px 20px",
+              background: "#16a34a",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            📄 Download Report
+          </button>
         </div>
+
+        <h1
+          style={{
+            color: "#2563eb",
+            marginBottom: "30px",
+          }}
+        >
+          {analysis.filename}
+        </h1>
 
         <div
           style={{
-            background: "#dcfce7",
-            padding: "20px",
-            borderRadius: "10px",
-            flex: 1,
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "20px",
+            marginBottom: "30px",
           }}
         >
-          <h2>Job Match</h2>
-          <h1>{analysis.job_match_score}%</h1>
-        </div>
-      </div>
-
-      <div className="card">
-        <h2>📄 Summary</h2>
-        <p>{analysis.summary}</p>
-      </div>
-
-      <div className="card">
-        <h2>💻 Technical Skills</h2>
-
-        {(analysis.technical_skills || []).map((skill, index) => (
-          <span
-            key={index}
+          <div
             style={{
-              display: "inline-block",
-              margin: "6px",
-              padding: "8px 14px",
-              background: "#2563eb",
-              color: "white",
-              borderRadius: "20px",
+              background: "#eff6ff",
+              padding: "25px",
+              borderRadius: "12px",
+              textAlign: "center",
             }}
           >
-            {skill}
-          </span>
-        ))}
+            <h2>ATS Score</h2>
+
+            <h1
+              style={{
+                color: "#2563eb",
+                fontSize: "50px",
+              }}
+            >
+              {analysis.ats_score}%
+            </h1>
+          </div>
+
+          <div
+            style={{
+              background: "#ecfdf5",
+              padding: "25px",
+              borderRadius: "12px",
+              textAlign: "center",
+            }}
+          >
+            <h2>Job Match</h2>
+
+            <h1
+              style={{
+                color: "#16a34a",
+                fontSize: "50px",
+              }}
+            >
+              {analysis.job_match_score}%
+            </h1>
+          </div>
+        </div>
+
+        <Section title="📄 Resume Summary">
+          <p>{analysis.summary}</p>
+        </Section>
+
+        <Section title="💻 Technical Skills">
+          <Tags items={analysis.technical_skills} color="#2563eb" />
+        </Section>
+
+        <Section title="✅ Matched Skills">
+          <Tags items={analysis.matched_skills} color="#16a34a" />
+        </Section>
+
+        <Section title="❌ Missing Skills">
+          <Tags items={analysis.missing_skills} color="#dc2626" />
+        </Section>
+
+        <Section title="🔑 Missing Keywords">
+          <Tags items={analysis.missing_keywords} color="#f59e0b" />
+        </Section>
+
+        <Section title="💪 Strengths">
+          <List items={analysis.strengths} />
+        </Section>
+
+        <Section title="💡 Improvements">
+          <List items={analysis.improvements} />
+        </Section>
+
+        <Section title="🎤 Interview Questions">
+          <List items={analysis.interview_questions} />
+        </Section>
       </div>
+    </>
+  );
+}
 
-      <div className="card">
-        <h2>✅ Matched Skills</h2>
+function Section({ title, children }) {
+  return (
+    <div
+      style={{
+        background: "white",
+        padding: "20px",
+        borderRadius: "12px",
+        marginBottom: "20px",
+        boxShadow: "0 3px 10px rgba(0,0,0,0.08)",
+      }}
+    >
+      <h2
+        style={{
+          marginBottom: "15px",
+          color: "#1e293b",
+        }}
+      >
+        {title}
+      </h2>
 
-        {(analysis.matched_skills || []).map((skill, index) => (
-          <li key={index}>{skill}</li>
-        ))}
-      </div>
-
-      <div className="card">
-        <h2>❌ Missing Skills</h2>
-
-        {(analysis.missing_skills || []).map((skill, index) => (
-          <li key={index}>{skill}</li>
-        ))}
-      </div>
-
-      <div className="card">
-        <h2>🔑 Missing Keywords</h2>
-
-        {(analysis.missing_keywords || []).map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </div>
-
-      <div className="card">
-        <h2>💪 Strengths</h2>
-
-        {(analysis.strengths || []).map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </div>
-
-      <div className="card">
-        <h2>💡 Improvements</h2>
-
-        {(analysis.improvements || []).map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </div>
-
-      <div className="card">
-        <h2>🎤 Interview Questions</h2>
-
-        {(analysis.interview_questions || []).map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </div>
-      <button>
-  📄 Download PDF Report
-</button>
+      {children}
     </div>
+  );
+}
+
+function Tags({ items = [], color }) {
+  return (
+    <>
+      {items.map((item, index) => (
+        <span
+          key={index}
+          style={{
+            display: "inline-block",
+            margin: "6px",
+            padding: "8px 14px",
+            background: color,
+            color: "white",
+            borderRadius: "20px",
+          }}
+        >
+          {item}
+        </span>
+      ))}
+    </>
+  );
+}
+
+function List({ items = [] }) {
+  return (
+    <ul>
+      {items.map((item, index) => (
+        <li
+          key={index}
+          style={{
+            marginBottom: "10px",
+            lineHeight: "1.6",
+          }}
+        >
+          {item}
+        </li>
+      ))}
+    </ul>
   );
 }
 
